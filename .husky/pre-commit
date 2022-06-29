@@ -3,3 +3,4 @@
 
 npx prettier -c .
 npx eslint .
+npx jest
