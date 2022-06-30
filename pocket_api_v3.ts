@@ -7,6 +7,10 @@ export type RetrieveDataRequiredParams = {
   access_token: string;
 };
 
+const startTimeParamName = "since";
+const resultsCountParamName = "count";
+const resultsOffsetParamName = "offset";
+
 export type RetrieveDataOptionalParams = Partial<{
   state: "unread" | "archive" | "all";
   favorite: 0 | 1;
@@ -16,13 +20,40 @@ export type RetrieveDataOptionalParams = Partial<{
   detailType: "simple" | "complete";
   search: string;
   domain: string;
-  since: number; // UNIX timestamp
-  // offset must be used with count
-  count: number; // Integer
-  offset?: number; // Integer
+  [startTimeParamName]: number;
+  [resultsCountParamName]: number;
+  [resultsOffsetParamName]: number;
 }>;
 
 export type RetrieveDataParams = RetrieveDataRequiredParams & RetrieveDataOptionalParams;
+
+class DataTypeMismatchError extends Error {
+  constructor(paramName: string, typeDescription: string) {
+    super(`If provided, '${paramName}' must be ${typeDescription}`);
+  }
+}
+
+function validateRetrieveDataParams(params: RetrieveDataParams) {
+  const {
+    [startTimeParamName]: startTime,
+    [resultsCountParamName]: count,
+    [resultsOffsetParamName]: offset,
+  } = params;
+  if (startTime != undefined && (!Number.isInteger(startTime) || startTime < 0)) {
+    throw new DataTypeMismatchError(
+      startTimeParamName,
+      "a non-negative integer (more specifically, a UNIX timestamp)"
+    );
+  }
+  if (count != undefined && (!Number.isInteger(count) || count <= 0)) {
+    // Without this constraint, the API will default to producing all results
+    // Hence, this serves as a user-friendly re-mapping of the behaviour
+    throw new DataTypeMismatchError(resultsCountParamName, "a positive, nonzero integer");
+  }
+  if (offset != undefined && (!Number.isInteger(offset) || offset < 0)) {
+    throw new DataTypeMismatchError(resultsOffsetParamName, "a non-negative integer");
+  }
+}
 
 function convertParams(params: Record<string, string | number>): Record<string, string> {
   return Object.fromEntries(Object.entries(params).map(([key, value]) => [key, `${value}`]));
@@ -92,6 +123,7 @@ export const RetrieveDataResponseT = _z_
 export type RetrieveDataResponse = _z_.infer<typeof RetrieveDataResponseT>;
 
 export async function retreiveData(params: RetrieveDataParams): Promise<RetrieveDataResponse> {
+  validateRetrieveDataParams(params);
   return axios
     .post("https://getpocket.com/v3/get", new url.URLSearchParams(convertParams(params)).toString())
     .then((res) => {

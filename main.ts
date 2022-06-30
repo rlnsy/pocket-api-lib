@@ -13,4 +13,6 @@ const { consumer_key, access_token } = _z_
 retreiveData({
   consumer_key,
   access_token,
-}).then(console.log);
+  count: 3,
+  sort: "newest",
+}).then((data) => console.log(data.list));
