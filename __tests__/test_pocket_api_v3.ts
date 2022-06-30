@@ -1,4 +1,4 @@
-import { retreiveData, RetrieveDataOptionalParams } from "../pocket_api_v3";
+import { retreiveData, RetrieveDataOptionalParams } from "..";
 import { z as _z_ } from "zod";
 
 export const PLACEHOLDER = "<placeholder>";
