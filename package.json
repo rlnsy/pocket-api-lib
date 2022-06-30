@@ -1,16 +1,21 @@
 {
   "name": "pocket-api-lib",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2022.06.29.0",
+  "description": "TypeScript client library for Pocket API",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "prepack": "npx eslint . && npx prettier -c . && npm t && npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "rlnsy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rlnsy/pocket-api-lib"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^28.1.3",
     "@typescript-eslint/eslint-plugin": "^5.30.0",
