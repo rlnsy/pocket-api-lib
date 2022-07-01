@@ -106,7 +106,43 @@ function applyIfDefined<X, Y>(fn: (_: X) => Y, arg: X | undefined): Y | undefine
   return arg != undefined ? fn(arg) : undefined;
 }
 
-function parseResponseItem(item: RetrieveDataResponseItem) {
+export type ParsedResponseItem = Partial<{
+  item_id: string;
+  resolved_id: string;
+  given_url: string;
+  resolved_url: string;
+  given_title: string;
+  resolved_title: string;
+  favorite: boolean;
+  status: "0" | "1" | "2";
+  excerpt: string;
+  is_article: boolean;
+  has_image: "0" | "1" | "2";
+  has_video: "0" | "1" | "2";
+  word_count: number;
+  tags: unknown;
+  authors: unknown;
+  images: unknown;
+  videos: unknown;
+  sort_id: number;
+  is_index: unknown;
+  lang: string;
+  listen_duration_estimate: number;
+  top_image_url: string;
+  time_to_read: number;
+  domain_metadata: {
+    name?: string;
+    logo: string;
+    greyscale_logo: string;
+  };
+  amp_url: string;
+  time_added: number;
+  time_updated: number;
+  time_read: number;
+  time_favorited: number;
+}>;
+
+function parseResponseItem(item: RetrieveDataResponseItem): ParsedResponseItem {
   const extractBool = (value: "0" | "1"): boolean => value === "1";
   return {
     ...item,
