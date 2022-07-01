@@ -114,6 +114,7 @@ function parseResponseItem(item: RetrieveDataResponseItem) {
     time_read: applyIfDefined(parseInt, item.time_read),
     time_favorited: applyIfDefined(parseInt, item.time_favorited),
     word_count: applyIfDefined(parseInt, item.word_count),
+    favorite: applyIfDefined((value) => value === "1", item.favorite),
   };
 }
 

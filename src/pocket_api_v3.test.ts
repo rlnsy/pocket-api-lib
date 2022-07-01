@@ -1,8 +1,8 @@
-import { retreiveData, RetrieveDataOptionalParams } from "./pocket_api_v3";
+import { retreiveData, RetrieveDataOptionalParams, RetrieveDataResponse } from "./pocket_api_v3";
 import { z as _z_ } from "zod";
 
 // initialize mocked axios module
-import ax from "axios";
+import ax, { AxiosResponse } from "axios";
 jest.mock("axios");
 const axios = ax as jest.Mocked<typeof ax>;
 
@@ -94,29 +94,40 @@ describe("Pocket API Library V3", () => {
       });
     });
     describe("Response parsing", () => {
+      const defaultRetreiveResponse: RetrieveDataResponse = {
+        status: 1,
+        complete: 1,
+        error: null,
+        search_meta: {
+          search_type: "normal",
+        },
+        since: 0,
+        list: {},
+      };
+
+      const mockResponse =
+        (
+          data: RetrieveDataResponse = defaultRetreiveResponse
+          //): Promise<Partial<AxiosResponse>> => new Promise((resolve) => resolve({ data }));
+        ): ((...args: Parameters<typeof axios.post>) => Promise<Partial<AxiosResponse>>) =>
+        async () => ({ data });
+
       test("Stringified numbers converted", async () => {
-        axios.post.mockImplementation(async () => {
-          return {
-            data: {
-              status: 1,
-              complete: 1,
-              error: null,
-              search_meta: {
-                search_type: "normal",
-              },
-              since: 0,
-              list: {
-                example: {
-                  time_added: "1",
-                  time_updated: "2",
-                  time_read: "3",
-                  time_favorited: "4",
-                  word_count: "100",
-                },
+        axios.post.mockImplementation(
+          mockResponse({
+            ...defaultRetreiveResponse,
+            list: {
+              example: {
+                favorite: "1",
+                time_added: "1",
+                time_updated: "2",
+                time_read: "3",
+                time_favorited: "4",
+                word_count: "100",
               },
             },
-          };
-        });
+          })
+        );
         await retreive().then(({ list: { example: data } }) => {
           expect(data.time_added).toEqual(1);
           expect(data.time_updated).toEqual(2);
@@ -126,24 +137,31 @@ describe("Pocket API Library V3", () => {
         });
       });
       test("Undefined values omitted", async () => {
-        axios.post.mockImplementation(async () => {
-          return {
-            data: {
-              status: 1,
-              complete: 1,
-              error: null,
-              search_meta: {
-                search_type: "normal",
-              },
-              since: 0,
-              list: {
-                example: {},
-              },
+        axios.post.mockImplementation(
+          mockResponse({
+            ...defaultRetreiveResponse,
+            list: {
+              example: {},
             },
-          };
-        });
+          })
+        );
         await retreive().then(({ list: { example: data } }) => {
           expect(data.word_count).toBeUndefined();
+        });
+      });
+      test("String binary to boolean", async () => {
+        axios.post.mockImplementation(
+          mockResponse({
+            ...defaultRetreiveResponse,
+            list: {
+              example: {
+                favorite: "1",
+              },
+            },
+          })
+        );
+        await retreive().then(({ list: { example: data } }) => {
+          expect(data.favorite).toEqual(true);
         });
       });
     });
