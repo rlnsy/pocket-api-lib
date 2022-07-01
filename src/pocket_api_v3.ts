@@ -154,7 +154,5 @@ export async function retreiveData(params: RetrieveDataParams) {
   validateRetrieveDataParams(params);
   return axios
     .post("https://getpocket.com/v3/get", new url.URLSearchParams(convertParams(params)).toString())
-    .then((res) => {
-      return RetrieveDataResponseT.parseAsync(res.data).then(parseResponse);
-    });
+    .then((res) => RetrieveDataResponseT.parseAsync(res.data).then(parseResponse));
 }
