@@ -1,6 +1,9 @@
 import { retreiveData, RetrieveDataOptionalParams } from "..";
 import { z as _z_ } from "zod";
 
+import axios, { Axios } from "axios";
+jest.mock("axios");
+
 export const PLACEHOLDER = "<placeholder>";
 
 export const ErrorT = _z_.object({
@@ -76,11 +79,16 @@ describe("Pocket API Library V3", () => {
       });
     });
     describe("Error handling", () => {
-      test("authentication", async () => {
+      test("Request rejects", async () => {
+        const errMessage = "unauthorized";
+        const mocked = axios as jest.Mocked<typeof axios>;
+        mocked.post.mockImplementation(() => {
+          throw new Error(errMessage);
+        });
         try {
           await get({});
         } catch (e) {
-          expect(ErrorT.parse(e).message).toMatch("code 403");
+          expect(ErrorT.parse(e).message).toMatch(errMessage);
         }
       });
     });
