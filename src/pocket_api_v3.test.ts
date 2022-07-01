@@ -1,4 +1,4 @@
-import { retreiveData, RetrieveDataOptionalParams } from "..";
+import { retreiveData, RetrieveDataOptionalParams } from "./pocket_api_v3";
 import { z as _z_ } from "zod";
 
 import axios, { Axios } from "axios";
