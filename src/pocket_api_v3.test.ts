@@ -156,12 +156,14 @@ describe("Pocket API Library V3", () => {
             list: {
               example: {
                 favorite: "1",
+                is_article: "0",
               },
             },
           })
         );
         await retreive().then(({ list: { example: data } }) => {
           expect(data.favorite).toEqual(true);
+          expect(data.is_article).toEqual(false);
         });
       });
     });

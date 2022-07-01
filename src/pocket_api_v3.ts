@@ -107,6 +107,7 @@ function applyIfDefined<X, Y>(fn: (_: X) => Y, arg: X | undefined): Y | undefine
 }
 
 function parseResponseItem(item: RetrieveDataResponseItem) {
+  const extractBool = (value: "0" | "1"): boolean => value === "1";
   return {
     ...item,
     time_added: applyIfDefined(parseInt, item.time_added),
@@ -114,7 +115,8 @@ function parseResponseItem(item: RetrieveDataResponseItem) {
     time_read: applyIfDefined(parseInt, item.time_read),
     time_favorited: applyIfDefined(parseInt, item.time_favorited),
     word_count: applyIfDefined(parseInt, item.word_count),
-    favorite: applyIfDefined((value) => value === "1", item.favorite),
+    favorite: applyIfDefined(extractBool, item.favorite),
+    is_article: applyIfDefined(extractBool, item.is_article),
   };
 }
 
