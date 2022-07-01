@@ -73,7 +73,7 @@ export const RetrieveDataResponseItemT = _z_
     is_article: _z_.union([_z_.literal("0"), _z_.literal("1")]),
     has_image: _z_.union([_z_.literal("0"), _z_.literal("1"), _z_.literal("2")]),
     has_video: _z_.union([_z_.literal("0"), _z_.literal("1"), _z_.literal("2")]),
-    word_count: _z_.string(), // stringified integer
+    word_count: _z_.string(),
     tags: _z_.unknown(),
     authors: _z_.unknown(),
     images: _z_.unknown(),
@@ -92,7 +92,6 @@ export const RetrieveDataResponseItemT = _z_
       })
       .strict(),
     amp_url: _z_.string(),
-    // these are all stringified integers
     time_added: _z_.string(),
     time_updated: _z_.string(),
     time_read: _z_.string(),
@@ -103,9 +102,28 @@ export const RetrieveDataResponseItemT = _z_
 
 export type RetrieveDataResponseItem = _z_.infer<typeof RetrieveDataResponseItemT>;
 
+function applyIfDefined<X, Y>(fn: (_: X) => Y, arg: X | undefined): Y | undefined {
+  return arg != undefined ? fn(arg) : undefined;
+}
+
+function parseResponseItem(item: RetrieveDataResponseItem) {
+  return {
+    ...item,
+    time_added: applyIfDefined(parseInt, item.time_added),
+    time_updated: applyIfDefined(parseInt, item.time_updated),
+    time_read: applyIfDefined(parseInt, item.time_read),
+    time_favorited: applyIfDefined(parseInt, item.time_favorited),
+    word_count: applyIfDefined(parseInt, item.word_count),
+  };
+}
+
 export const RetrieveDataResponseListT = _z_.record(RetrieveDataResponseItemT);
 
 export type RetrieveDataResponseList = _z_.infer<typeof RetrieveDataResponseListT>;
+
+function parseReponseList(list: RetrieveDataResponseList) {
+  return Object.fromEntries(Object.entries(list).map(([k, item]) => [k, parseResponseItem(item)]));
+}
 
 export const RetrieveDataResponseT = _z_
   .object({
@@ -120,13 +138,20 @@ export const RetrieveDataResponseT = _z_
   })
   .strict();
 
+function parseResponse(res: RetrieveDataResponse) {
+  return {
+    ...res,
+    list: parseReponseList(res.list),
+  };
+}
+
 export type RetrieveDataResponse = _z_.infer<typeof RetrieveDataResponseT>;
 
-export async function retreiveData(params: RetrieveDataParams): Promise<RetrieveDataResponse> {
+export async function retreiveData(params: RetrieveDataParams) {
   validateRetrieveDataParams(params);
   return axios
     .post("https://getpocket.com/v3/get", new url.URLSearchParams(convertParams(params)).toString())
     .then((res) => {
-      return RetrieveDataResponseT.parse(res.data);
+      return RetrieveDataResponseT.parseAsync(res.data).then(parseResponse);
     });
 }
