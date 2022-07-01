@@ -123,6 +123,23 @@ function parseItemStatus(status: "0" | "1" | "2"): ItemStatus {
   }
 }
 
+export enum ItemMediaType {
+  NO_CONTENT,
+  HAS_CONTENT,
+  IS_CONTENT,
+}
+
+function parseItemMediaType(status: "0" | "1" | "2"): ItemMediaType {
+  switch (status) {
+    case "0":
+      return ItemMediaType.NO_CONTENT;
+    case "1":
+      return ItemMediaType.HAS_CONTENT;
+    case "2":
+      return ItemMediaType.IS_CONTENT;
+  }
+}
+
 export type ParsedResponseItem = Partial<{
   item_id: string;
   resolved_id: string;
@@ -134,8 +151,8 @@ export type ParsedResponseItem = Partial<{
   status: ItemStatus;
   excerpt: string;
   is_article: boolean;
-  has_image: "0" | "1" | "2";
-  has_video: "0" | "1" | "2";
+  has_image: ItemMediaType;
+  has_video: ItemMediaType;
   word_count: number;
   tags: unknown;
   authors: unknown;
@@ -171,6 +188,8 @@ function parseResponseItem(item: RetrieveDataResponseItem): ParsedResponseItem {
     favorite: applyIfDefined(extractBool, item.favorite),
     is_article: applyIfDefined(extractBool, item.is_article),
     status: applyIfDefined(parseItemStatus, item.status),
+    has_image: applyIfDefined(parseItemMediaType, item.has_image),
+    has_video: applyIfDefined(parseItemMediaType, item.has_video),
   };
 }
 

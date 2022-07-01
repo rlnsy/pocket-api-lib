@@ -1,4 +1,10 @@
-import { retreiveData, RetrieveDataOptionalParams, RetrieveDataResponse } from "./pocket_api_v3";
+import {
+  ItemMediaType,
+  ItemStatus,
+  retreiveData,
+  RetrieveDataOptionalParams,
+  RetrieveDataResponse,
+} from "./pocket_api_v3";
 import { z as _z_ } from "zod";
 
 // initialize mocked axios module
@@ -164,6 +170,38 @@ describe("Pocket API Library V3", () => {
         await retreive().then(({ list: { example: data } }) => {
           expect(data.favorite).toEqual(true);
           expect(data.is_article).toEqual(false);
+        });
+      });
+      test("Item status", async () => {
+        axios.post.mockImplementation(
+          mockResponse({
+            ...defaultRetreiveResponse,
+            list: {
+              example: {
+                status: "1",
+              },
+            },
+          })
+        );
+        await retreive().then(({ list: { example: data } }) => {
+          expect(data.status).toEqual(ItemStatus.ARCHIVE);
+        });
+      });
+      test("Item media type", async () => {
+        axios.post.mockImplementation(
+          mockResponse({
+            ...defaultRetreiveResponse,
+            list: {
+              example: {
+                has_image: "0",
+                has_video: "2",
+              },
+            },
+          })
+        );
+        await retreive().then(({ list: { example: data } }) => {
+          expect(data.has_image).toEqual(ItemMediaType.NO_CONTENT);
+          expect(data.has_video).toEqual(ItemMediaType.IS_CONTENT);
         });
       });
     });
