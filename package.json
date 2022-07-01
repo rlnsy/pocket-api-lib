@@ -10,6 +10,8 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier -c .",
     "prepare": "husky install",
     "prepack": "npx eslint . && npx prettier -c . && npm t && npm run build"
   },

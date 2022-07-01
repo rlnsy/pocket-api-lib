@@ -6,13 +6,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup
-      - run: npx eslint .
+      - run: npm run lint
   formatting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup
-      - run: npx prettier -c .
+      - run: npm run format
   build:
     runs-on: ubuntu-latest
     steps:
