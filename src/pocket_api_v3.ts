@@ -106,6 +106,23 @@ function applyIfDefined<X, Y>(fn: (_: X) => Y, arg: X | undefined): Y | undefine
   return arg != undefined ? fn(arg) : undefined;
 }
 
+export enum ItemStatus {
+  NORMAL,
+  ARCHIVE,
+  DELETE,
+}
+
+function parseItemStatus(status: "0" | "1" | "2"): ItemStatus {
+  switch (status) {
+    case "0":
+      return ItemStatus.NORMAL;
+    case "1":
+      return ItemStatus.ARCHIVE;
+    case "2":
+      return ItemStatus.DELETE;
+  }
+}
+
 export type ParsedResponseItem = Partial<{
   item_id: string;
   resolved_id: string;
@@ -114,7 +131,7 @@ export type ParsedResponseItem = Partial<{
   given_title: string;
   resolved_title: string;
   favorite: boolean;
-  status: "0" | "1" | "2";
+  status: ItemStatus;
   excerpt: string;
   is_article: boolean;
   has_image: "0" | "1" | "2";
@@ -153,6 +170,7 @@ function parseResponseItem(item: RetrieveDataResponseItem): ParsedResponseItem {
     word_count: applyIfDefined(parseInt, item.word_count),
     favorite: applyIfDefined(extractBool, item.favorite),
     is_article: applyIfDefined(extractBool, item.is_article),
+    status: applyIfDefined(parseItemStatus, item.status),
   };
 }
 
