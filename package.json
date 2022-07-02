@@ -16,7 +16,7 @@
     "format": "prettier -c .",
     "check": "npm run format && npm run lint && npm run test && npm run build:check",
     "prepare": "husky install",
-    "prepack": "npm run check && npm run build"
+    "prepack": "npm i && npm run check && npm run build"
   },
   "author": "rlnsy",
   "repository": {
