@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run check
+# won't test or check build, since these may involve non-staged files
+npx lint-staged
