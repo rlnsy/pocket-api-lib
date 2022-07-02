@@ -1,6 +1,6 @@
 import { string, object } from "zod";
 import fs from "fs";
-import { retreiveData, getRecentItems, RetrieveDataRequiredParams } from ".";
+import { retrieveData, getRecentItems, RetrieveDataRequiredParams } from ".";
 import { assert } from "chai";
 
 const ConfigT = object({
@@ -17,7 +17,7 @@ const requiredParams: RetrieveDataRequiredParams = {
   access_token,
 };
 
-retreiveData(requiredParams);
+retrieveData(requiredParams);
 
 getRecentItems(requiredParams, 4).then(({ list }) => {
   assert.equal(Object.keys(list).length, 4);

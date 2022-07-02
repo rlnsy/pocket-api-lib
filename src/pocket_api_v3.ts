@@ -224,7 +224,7 @@ function parseResponse(res: RetrieveDataResponse) {
 
 export type RetrieveDataResponse = _z_.infer<typeof RetrieveDataResponseT>;
 
-export async function retreiveData(params: RetrieveDataParams) {
+export async function retrieveData(params: RetrieveDataParams) {
   validateRetrieveDataParams(params);
   return axios
     .post("https://getpocket.com/v3/get", new url.URLSearchParams(convertParams(params)).toString())
@@ -232,7 +232,7 @@ export async function retreiveData(params: RetrieveDataParams) {
 }
 
 export async function getRecentItems(params: RetrieveDataRequiredParams, count = 5) {
-  return retreiveData({
+  return retrieveData({
     ...params,
     count,
   });

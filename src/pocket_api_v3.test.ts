@@ -1,7 +1,7 @@
 import {
   ItemMediaType,
   ItemStatus,
-  retreiveData,
+  retrieveData,
   RetrieveDataOptionalParams,
   RetrieveDataResponse,
 } from "./pocket_api_v3";
@@ -22,8 +22,8 @@ describe("Pocket API Library V3", () => {
   describe("Retrieve", () => {
     const consumer_key = PLACEHOLDER;
     const access_token = PLACEHOLDER;
-    const retreive = (args: RetrieveDataOptionalParams = {}) =>
-      retreiveData({
+    const retrieve = (args: RetrieveDataOptionalParams = {}) =>
+      retrieveData({
         ...args,
         consumer_key,
         access_token,
@@ -31,7 +31,7 @@ describe("Pocket API Library V3", () => {
     describe("Input validation", () => {
       test("non-integer start time", async () => {
         try {
-          await retreive({
+          await retrieve({
             since: 0.5,
           });
           fail();
@@ -42,7 +42,7 @@ describe("Pocket API Library V3", () => {
       });
       test("negative start time", async () => {
         try {
-          await retreive({
+          await retrieve({
             since: -1,
           });
           fail();
@@ -53,7 +53,7 @@ describe("Pocket API Library V3", () => {
       });
       test("negative count", async () => {
         try {
-          await retreive({
+          await retrieve({
             count: -1,
           });
           fail();
@@ -64,7 +64,7 @@ describe("Pocket API Library V3", () => {
       });
       test("0 count", async () => {
         try {
-          await retreive({
+          await retrieve({
             count: 0,
           });
           fail();
@@ -76,7 +76,7 @@ describe("Pocket API Library V3", () => {
       });
       test("negative offset", async () => {
         try {
-          await retreive({
+          await retrieve({
             offset: -1,
           });
           fail();
@@ -93,14 +93,14 @@ describe("Pocket API Library V3", () => {
           throw new Error(errMessage);
         });
         try {
-          await retreive();
+          await retrieve();
         } catch (e) {
           expect(ErrorT.parse(e).message).toMatch(errMessage);
         }
       });
     });
     describe("Response parsing", () => {
-      const defaultRetreiveResponse: RetrieveDataResponse = {
+      const defaultRetrieveResponse: RetrieveDataResponse = {
         status: 1,
         complete: 1,
         error: null,
@@ -113,7 +113,7 @@ describe("Pocket API Library V3", () => {
 
       const mockResponse =
         (
-          data: RetrieveDataResponse = defaultRetreiveResponse
+          data: RetrieveDataResponse = defaultRetrieveResponse
           //): Promise<Partial<AxiosResponse>> => new Promise((resolve) => resolve({ data }));
         ): ((...args: Parameters<typeof axios.post>) => Promise<Partial<AxiosResponse>>) =>
         async () => ({ data });
@@ -121,7 +121,7 @@ describe("Pocket API Library V3", () => {
       test("Stringified numbers converted", async () => {
         axios.post.mockImplementation(
           mockResponse({
-            ...defaultRetreiveResponse,
+            ...defaultRetrieveResponse,
             list: {
               example: {
                 favorite: "1",
@@ -134,7 +134,7 @@ describe("Pocket API Library V3", () => {
             },
           })
         );
-        await retreive().then(({ list: { example: data } }) => {
+        await retrieve().then(({ list: { example: data } }) => {
           expect(data.time_added).toEqual(1);
           expect(data.time_updated).toEqual(2);
           expect(data.time_read).toEqual(3);
@@ -145,20 +145,20 @@ describe("Pocket API Library V3", () => {
       test("Undefined values omitted", async () => {
         axios.post.mockImplementation(
           mockResponse({
-            ...defaultRetreiveResponse,
+            ...defaultRetrieveResponse,
             list: {
               example: {},
             },
           })
         );
-        await retreive().then(({ list: { example: data } }) => {
+        await retrieve().then(({ list: { example: data } }) => {
           expect(data.word_count).toBeUndefined();
         });
       });
       test("String binary to boolean", async () => {
         axios.post.mockImplementation(
           mockResponse({
-            ...defaultRetreiveResponse,
+            ...defaultRetrieveResponse,
             list: {
               example: {
                 favorite: "1",
@@ -168,7 +168,7 @@ describe("Pocket API Library V3", () => {
             },
           })
         );
-        await retreive().then(({ list: { example: data } }) => {
+        await retrieve().then(({ list: { example: data } }) => {
           expect(data.favorite).toEqual(true);
           expect(data.is_article).toEqual(false);
           expect(data.is_index).toEqual(true);
@@ -177,7 +177,7 @@ describe("Pocket API Library V3", () => {
       test("Item status", async () => {
         axios.post.mockImplementation(
           mockResponse({
-            ...defaultRetreiveResponse,
+            ...defaultRetrieveResponse,
             list: {
               example: {
                 status: "1",
@@ -185,14 +185,14 @@ describe("Pocket API Library V3", () => {
             },
           })
         );
-        await retreive().then(({ list: { example: data } }) => {
+        await retrieve().then(({ list: { example: data } }) => {
           expect(data.status).toEqual(ItemStatus.ARCHIVE);
         });
       });
       test("Item media type", async () => {
         axios.post.mockImplementation(
           mockResponse({
-            ...defaultRetreiveResponse,
+            ...defaultRetrieveResponse,
             list: {
               example: {
                 has_image: "0",
@@ -201,7 +201,7 @@ describe("Pocket API Library V3", () => {
             },
           })
         );
-        await retreive().then(({ list: { example: data } }) => {
+        await retrieve().then(({ list: { example: data } }) => {
           expect(data.has_image).toEqual(ItemMediaType.NO_CONTENT);
           expect(data.has_video).toEqual(ItemMediaType.IS_CONTENT);
         });
