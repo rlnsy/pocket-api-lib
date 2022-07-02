@@ -79,7 +79,7 @@ export const RetrieveDataResponseItemT = _z_
     images: _z_.unknown(),
     videos: _z_.unknown(),
     sort_id: _z_.number(),
-    is_index: _z_.unknown(),
+    is_index: _z_.union([_z_.literal("0"), _z_.literal("1")]),
     lang: _z_.string(),
     listen_duration_estimate: _z_.number(),
     top_image_url: _z_.string(),
@@ -159,7 +159,7 @@ export type ParsedResponseItem = Partial<{
   images: unknown;
   videos: unknown;
   sort_id: number;
-  is_index: unknown;
+  is_index: boolean;
   lang: string;
   listen_duration_estimate: number;
   top_image_url: string;
@@ -190,6 +190,7 @@ function parseResponseItem(item: RetrieveDataResponseItem): ParsedResponseItem {
     status: applyIfDefined(parseItemStatus, item.status),
     has_image: applyIfDefined(parseItemMediaType, item.has_image),
     has_video: applyIfDefined(parseItemMediaType, item.has_video),
+    is_index: applyIfDefined(extractBool, item.is_index),
   };
 }
 

@@ -163,6 +163,7 @@ describe("Pocket API Library V3", () => {
               example: {
                 favorite: "1",
                 is_article: "0",
+                is_index: "1",
               },
             },
           })
@@ -170,6 +171,7 @@ describe("Pocket API Library V3", () => {
         await retreive().then(({ list: { example: data } }) => {
           expect(data.favorite).toEqual(true);
           expect(data.is_article).toEqual(false);
+          expect(data.is_index).toEqual(true);
         });
       });
       test("Item status", async () => {
