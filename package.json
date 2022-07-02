@@ -1,6 +1,6 @@
 {
   "name": "pocket-api-lib",
-  "version": "2022.6.30",
+  "version": "2022.7.1",
   "description": "TypeScript client library for Pocket API (https://getpocket.com/developer)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
