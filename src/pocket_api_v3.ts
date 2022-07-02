@@ -230,3 +230,10 @@ export async function retreiveData(params: RetrieveDataParams) {
     .post("https://getpocket.com/v3/get", new url.URLSearchParams(convertParams(params)).toString())
     .then((res) => RetrieveDataResponseT.parseAsync(res.data).then(parseResponse));
 }
+
+export async function getRecentItems(params: RetrieveDataRequiredParams, count = 5) {
+  return retreiveData({
+    ...params,
+    count,
+  });
+}
