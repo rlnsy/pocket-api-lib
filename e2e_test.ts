@@ -1,6 +1,6 @@
 import { string, object } from "zod";
 import fs from "fs";
-import { retrieveData, getRecentItems, RetrieveDataRequiredParams } from ".";
+import { retrieveData, getRecentItems, RetrieveDataParams } from ".";
 import { assert } from "chai";
 
 const ConfigT = object({
@@ -12,7 +12,7 @@ const { consumer_key, access_token } = ConfigT.parse(
   JSON.parse(fs.readFileSync("id.json").toString())
 );
 
-const requiredParams: RetrieveDataRequiredParams = {
+const requiredParams: Pick<RetrieveDataParams, "consumer_key" | "access_token"> = {
   consumer_key,
   access_token,
 };

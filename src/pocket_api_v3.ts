@@ -2,7 +2,7 @@ import { z as _z_ } from "zod";
 import axios from "axios";
 import * as url from "url";
 
-export type RetrieveDataRequiredParams = {
+type RetrieveDataRequiredParams = {
   consumer_key: string;
   access_token: string;
 };
